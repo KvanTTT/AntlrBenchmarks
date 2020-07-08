@@ -1,7 +1,9 @@
 using System;
 using Antlr4.Runtime;
 
-namespace AntlrLetterCaseBenchmark
+[assembly: CLSCompliant(false)]
+
+namespace AntlrUtils
 {
     public class ConsoleErrorListener : IAntlrErrorListener<IToken>, IAntlrErrorListener<int>
     {

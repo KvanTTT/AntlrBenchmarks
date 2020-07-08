@@ -1,5 +1,6 @@
 using System.Text;
 using Antlr4.Runtime;
+using AntlrUtils;
 using BenchmarkDotNet.Attributes;
 
 namespace AntlrLetterCaseBenchmark
@@ -7,7 +8,7 @@ namespace AntlrLetterCaseBenchmark
     public class CaseInsensitiveGrammarVsLexer
     {
         private readonly string data;
-        private readonly IAntlrErrorListener<int> errorListener = new ConsoleErrorListener();
+        private readonly ConsoleErrorListener errorListener = new ConsoleErrorListener();
 
         public CaseInsensitiveGrammarVsLexer()
         {
@@ -31,8 +32,8 @@ namespace AntlrLetterCaseBenchmark
 
         private static string GenerateWord()
         {
-            var wordBuilder = new StringBuilder('z' - 'a' + 1);
-            for (char c = 'a'; c <= 'z'; c++)
+            var wordBuilder = new StringBuilder('Z' - 'A' + 1);
+            for (char c = 'A'; c <= 'Z'; c++)
             {
                 wordBuilder.Append(c);
             }
@@ -41,19 +42,19 @@ namespace AntlrLetterCaseBenchmark
         }
 
         [Benchmark(Baseline = true)]
-        public void CaseInsensitiveGrammarTest()
+        public void CaseInsensitiveLexerTest()
         {
             var stream = new CaseInsensitiveInputStream(data);
-            var lexer = new CaseInsensitiveGrammar(stream);
+            var lexer = new CaseInsensitiveLexer(stream);
             lexer.AddErrorListener(errorListener);
             var tokens = lexer.GetAllTokens();
         }
 
         [Benchmark]
-        public void CaseInsensitiveLexerTest()
+        public void CaseInsensitiveGrammarTest()
         {
             var stream = new AntlrInputStream(data);
-            var lexer = new CaseInsensitiveLexer(stream);
+            var lexer = new CaseInsensitiveGrammar(stream);
             lexer.AddErrorListener(errorListener);
             var tokens = lexer.GetAllTokens();
         }
