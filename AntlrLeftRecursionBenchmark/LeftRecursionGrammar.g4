@@ -1,5 +1,13 @@
 grammar LeftRecursionGrammar;
 
+leftRecExprRoot
+    : leftRecExpr EOF
+    ;
+
+notLeftRecExprRoot
+    : notLeftRecExpr EOF
+    ;
+
 leftRecExpr
     : atom
 
@@ -12,7 +20,7 @@ leftRecExpr
     | leftRecExpr '||' leftRecExpr
     ;
 
-notLeftRexExpr
+notLeftRecExpr
     : logicalAndExpr ('||' logicalAndExpr)*
     ;
 
