@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
 using Antlr4.Runtime;
+using Antlr4.Runtime.Atn;
 using AntlrUtils;
 using BenchmarkDotNet.Attributes;
 
@@ -9,7 +9,7 @@ namespace AntlrLeftRecursionBenchmark
 {
     public class AntlrLeftRecursionTests
     {
-        private const int TermsCount = 256;
+        private const int TermsCount = 128;
         private readonly ConsoleErrorListener errorListener = new ConsoleErrorListener();
 
         private readonly IList<IToken> tokens;
@@ -29,6 +29,7 @@ namespace AntlrLeftRecursionBenchmark
 
             // x_0_0 && x_0_1 == x_0_2 + x_0_3 * x_0_4 ^ x_0_5 || x_1_0 && x_1_1 == x_1_2 + x_1_3 * x_1_4 ^ x_1_5 || ... || x_n_0 && x_n_1 == x_n_2 + x_n_3 * x_n_4 ^ x_n_5
 
+            //var term = "x_0_0";
             var term = "x_0_0 && x_0_1 == x_0_2 + x_0_3 * x_0_4 ^ x_0_5";
             //var term = "x_0_0 ^ x_0_1 * x_0_2 + x_0_3 == x_0_4 && x_0_5";
 
@@ -43,6 +44,8 @@ namespace AntlrLeftRecursionBenchmark
 
             return result.ToString();
         }
+
+        [Params("SLL", "LL")] public string Mode { get; set; } = "SLL";
 
         [Benchmark(Baseline = true)]
         public void LeftRecursionTest()
@@ -64,6 +67,7 @@ namespace AntlrLeftRecursionBenchmark
             var tokenStream = new CommonTokenStream(listTokenSource);
             var parser = new LeftRecursionGrammarParser(tokenStream);
             parser.BuildParseTree = false;
+            parser.Interpreter.PredictionMode = Mode == "SLL" ? PredictionMode.Sll : PredictionMode.Ll;
             parser.AddErrorListener(errorListener);
             return parser;
         }
