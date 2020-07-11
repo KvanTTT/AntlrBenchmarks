@@ -15,10 +15,11 @@ namespace AntlrLeftRecursionBenchmark
         private readonly AntlrOptimized.ConsoleErrorListener optimizedErrorListener = new AntlrOptimized.ConsoleErrorListener();
         private readonly AntlrStandard.ConsoleErrorListener standardErrorListener = new AntlrStandard.ConsoleErrorListener();
 
-        private readonly IList<AntlrOptimized::Antlr4.Runtime.IToken> optimizedTokens;
-        private readonly IList<AntlrStandard::Antlr4.Runtime.IToken> standardTokens;
+        private IList<AntlrOptimized::Antlr4.Runtime.IToken> optimizedTokens;
+        private IList<AntlrStandard::Antlr4.Runtime.IToken> standardTokens;
 
-        public AntlrLeftRecursionTests()
+        [GlobalSetup]
+        public void Init()
         {
             var data = GenerateData();
 

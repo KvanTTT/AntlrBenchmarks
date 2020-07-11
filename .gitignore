@@ -354,3 +354,6 @@ MigrationBackup/
 
 # Antlr
 .antlr/
+
+# Java and Maven
+target/
