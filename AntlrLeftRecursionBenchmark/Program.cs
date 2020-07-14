@@ -10,6 +10,8 @@ namespace AntlrLeftRecursionBenchmark
         static void Main()
         {
             /*var tests = new AntlrLeftRecursionTests();
+            tests.Init();
+            tests.NotLeftRecursionTest();
             tests.NotLeftRecursionTest();
             tests.LeftRecursionTest();*/
 

@@ -15,8 +15,8 @@ namespace AntlrLeftRecursionBenchmark
         private readonly AntlrOptimized.ConsoleErrorListener optimizedErrorListener = new AntlrOptimized.ConsoleErrorListener();
         private readonly AntlrStandard.ConsoleErrorListener standardErrorListener = new AntlrStandard.ConsoleErrorListener();
 
-        private IList<AntlrOptimized::Antlr4.Runtime.IToken> optimizedTokens;
-        private IList<AntlrStandard::Antlr4.Runtime.IToken> standardTokens;
+        private AntlrOptimizedRuntime.CommonTokenStream optimizedTokenStream;
+        private AntlrStandardRuntime.CommonTokenStream standardTokenStream;
 
         [GlobalSetup]
         public void Init()
@@ -26,12 +26,12 @@ namespace AntlrLeftRecursionBenchmark
             var optimizedStream = new AntlrOptimizedRuntime.AntlrInputStream(data);
             var optimizedLexer = new AntlrOptimized.LeftRecursionGrammarLexer(optimizedStream);
             optimizedLexer.AddErrorListener(optimizedErrorListener);
-            optimizedTokens = optimizedLexer.GetAllTokens();
+            optimizedTokenStream = new AntlrOptimizedRuntime.CommonTokenStream(optimizedLexer);
 
             var standardStream = new AntlrStandardRuntime.AntlrInputStream(data);
             var standardLexer = new AntlrStandard.LeftRecursionGrammarLexer(standardStream);
             standardLexer.AddErrorListener(standardErrorListener);
-            standardTokens = standardLexer.GetAllTokens();
+            standardTokenStream = new AntlrStandardRuntime.CommonTokenStream(standardLexer);
         }
 
         private string GenerateData()
@@ -61,36 +61,31 @@ namespace AntlrLeftRecursionBenchmark
         [Params("Optimized", "Standard")] public string Runtime { get; set; } = "Optimized";
 
         [Benchmark(Baseline = true)]
-        public void LeftRecursionTest()
+        public object LeftRecursionTest()
         {
             if (Runtime == "Optimized")
             {
-                CreateOptimizedParser().leftRecExprRoot();
+                return CreateOptimizedParser().leftRecExprRoot();
             }
-            else
-            {
-                CreateStandardParser().leftRecExprRoot();
-            }
+
+            return CreateStandardParser().leftRecExprRoot();
         }
 
         [Benchmark]
-        public void NotLeftRecursionTest()
+        public object NotLeftRecursionTest()
         {
             if (Runtime == "Optimized")
             {
-                CreateOptimizedParser().notLeftRecExprRoot();
+                return CreateOptimizedParser().notLeftRecExprRoot();
             }
-            else
-            {
-                CreateStandardParser().notLeftRecExprRoot();
-            }
+
+            return CreateStandardParser().notLeftRecExprRoot();
         }
 
         private AntlrOptimized.LeftRecursionGrammarParser CreateOptimizedParser()
         {
-            var listTokenSource = new AntlrOptimizedRuntime.ListTokenSource(optimizedTokens);
-            var tokenStream = new AntlrOptimizedRuntime.CommonTokenStream(listTokenSource);
-            var parser = new AntlrOptimized.LeftRecursionGrammarParser(tokenStream);
+            optimizedTokenStream.Reset();
+            var parser = new AntlrOptimized.LeftRecursionGrammarParser(optimizedTokenStream);
             parser.BuildParseTree = false;
             parser.Interpreter.PredictionMode = Mode == "SLL" ? AntlrOptimizedRuntime.Atn.PredictionMode.Sll : AntlrOptimizedRuntime.Atn.PredictionMode.Ll;
             parser.AddErrorListener(optimizedErrorListener);
@@ -99,9 +94,8 @@ namespace AntlrLeftRecursionBenchmark
 
         private AntlrStandard.LeftRecursionGrammarParser CreateStandardParser()
         {
-            var listTokenSource = new AntlrStandardRuntime.ListTokenSource(standardTokens);
-            var tokenStream = new AntlrStandardRuntime.CommonTokenStream(listTokenSource);
-            var parser = new AntlrStandard.LeftRecursionGrammarParser(tokenStream);
+            standardTokenStream.Reset();
+            var parser = new AntlrStandard.LeftRecursionGrammarParser(standardTokenStream);
             parser.BuildParseTree = false;
             parser.Interpreter.PredictionMode = Mode == "SLL" ? AntlrStandardRuntime.Atn.PredictionMode.SLL : AntlrStandardRuntime.Atn.PredictionMode.LL;
             parser.AddErrorListener(standardErrorListener);

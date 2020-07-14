@@ -1,26 +1,25 @@
 import sys
 from antlr4.InputStream import InputStream
 from antlr4.CommonTokenStream import CommonTokenStream
-from antlr4.ListTokenSource import ListTokenSource
 from antlr4.atn.PredictionMode import PredictionMode
 from LeftRecursionGrammarLexer import LeftRecursionGrammarLexer
 from LeftRecursionGrammarParser import LeftRecursionGrammarParser
 import timeit
 
 terms_count = 128
-mode = "SLL"
 warm_up_count = 4
 iteration_count = 64
 
-tokens = []
+mode = "SLL"
+tokens_stream = None
 
 
 def main(argv):
     data = generate_data()
     code_stream = InputStream(data)
     lexer = LeftRecursionGrammarLexer(code_stream)
-    global tokens, mode
-    tokens = lexer.getAllTokens()
+    global mode, tokens_stream
+    tokens_stream = CommonTokenStream(lexer)
 
     mode = "SLL"
     sll_left_recursion = benchmark_average("left_recursion_test", "SLL")
@@ -74,22 +73,19 @@ def benchmark_average(func_name, comment):
 
     print("")
 
-    return int(round(avg_time * 1_000_000)) # return result in microseconds
+    return int(round(avg_time * 1_000_000))  # return result in microseconds
 
 
 def left_recursion_test():
-    create_parser().leftRecExprRoot()
-    pass
+    return create_parser().leftRecExprRoot()
 
 
 def not_left_recursion_test():
-    create_parser().notLeftRecExprRoot()
-    pass
+    return create_parser().notLeftRecExprRoot()
 
 
 def create_parser():
-    tokens_source = ListTokenSource(tokens)
-    tokens_stream = CommonTokenStream(tokens_source)
+    tokens_stream.reset()
     parser = LeftRecursionGrammarParser(tokens_stream)
     parser.buildParseTrees = False
     parser._interp.predictionMode = PredictionMode.SLL if mode == "SLL" else PredictionMode.LL
