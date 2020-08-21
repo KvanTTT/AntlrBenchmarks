@@ -1,0 +1,4 @@
+[submodule "Benchmark/Php/vendor/antlr/antlr4-php-runtime"]
+	path = Benchmark/Php/vendor/antlr/antlr4-php-runtime
+	url = https://github.com/antlr/antlr-php-runtime.git
+	branch = master
