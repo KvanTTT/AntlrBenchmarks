@@ -44,6 +44,11 @@ $runtimes = @{
         Extension = ".go";
         ExeExtension = ".exe";
     };
+    PhpStandard = New-Object PSObject -Property @{
+        Name = "PhpStandard";
+        Target = "PHP";
+        Extension = ".php";
+    };
 };
 
 $testConfigs = @(
@@ -54,6 +59,7 @@ $testConfigs = @(
     New-Object PSObject -Property @{ Runtime = "Python3Standard"; };
     New-Object PSObject -Property @{ Runtime = "JavaScriptStandard"; };
     New-Object PSObject -Property @{ Runtime = "GoStandard"; };
+    New-Object PSObject -Property @{ Runtime = "PhpStandard"; };
     New-Object PSObject -Property @{ Runtime = "JavaStandard"; Grammar = "LeftRecursion" };
     New-Object PSObject -Property @{ Runtime = "JavaOptimized"; };
     New-Object PSObject -Property @{ Runtime = "CSharpStandard"; };
@@ -61,6 +67,7 @@ $testConfigs = @(
     New-Object PSObject -Property @{ Runtime = "Python3Standard"; };
     New-Object PSObject -Property @{ Runtime = "JavaScriptStandard"; };
     New-Object PSObject -Property @{ Runtime = "GoStandard"; };
+    New-Object PSObject -Property @{ Runtime = "PhpStandard"; };
 )
 
 function ProcessAll()
@@ -183,10 +190,11 @@ function Generate($runtime, [string] $grammar, [string] $resultDir)
 
     java -jar $generator ($grammar + ".g4") -no-visitor -no-listener -o $outputSourceDir -Dlanguage="$target" -package "$package"
 
-    $dataFullPath = (Join-Path (Join-Path $PSScriptRoot $resultDir) $dataFileName).replace("\", "\\")
+    $dataFullPath = (Join-Path (Join-Path $PSScriptRoot $resultDir) $dataFileName).replace("\", "/")
     $extension = $runtime.Extension
     $outputMainFile = Join-Path $outputSourceDir ($grammar + $extension)
     $mainFileContent = Get-Content ("Templates/Template" + $extension)
+    $mainFileContent = $mainFileContent.replace("__RootPath__", $PSScriptRoot.replace("\", "/"))
     $mainFileContent = $mainFileContent.replace("__TemplateGrammarName__", $grammar)
     $mainFileContent = $mainFileContent.replace("__RuntimeName__", $runtimeName)
     $mainFileContent = $mainFileContent.replace("default_input_file", $dataFullPath)
@@ -223,9 +231,10 @@ function Generate($runtime, [string] $grammar, [string] $resultDir)
         $projectFileContent = $projectFileContent.replace("<version></version>", "<version>$version</version>")
         $fileOrProjectName = "pom.xml"
     }
-    else
+    elseif ($runtimeName -eq "PhpStandard")
     {
-        $fileOrProjectName = ""
+        $projectFileContent = Get-Content "Templates/phpbench.json.dist"
+        $fileOrProjectName = "phpbench.json.dist"
     }
 
     $resultPath = Join-Path (Join-Path $PSScriptRoot $outputDir) $fileOrProjectName
@@ -306,7 +315,10 @@ function Run($runtime, [string] $grammar)
         }
         elseif ($runtimeName -eq "PhpStandard")
         {
-            php $scriptOrExePath
+            $currentPath = Get-Location
+            Set-Location $exeOrScriptDirectory
+            phpbench run ($grammar + $exeExt) --retry-threshold=5 --report=default --output=console --output=csv_file
+            Set-Location $currentPath
         }
     }
 
@@ -331,6 +343,12 @@ function ImportResult($runtime, [string] $grammar, [string] $resultDir)
         $csvData = Import-Csv "${resultDir}/jmh-result.csv" -Delimiter ','
         $meanStr = $csvData[0]."Score".replace(",", ".")
         $mean = [decimal]$meanStr
+    }
+    elseif ($runtimeName -eq "PhpStandard")
+    {
+        $csvData = Import-Csv "${resultDir}/${grammar}/${runtimeName}/benchmark.csv" -Delimiter ','
+        $meanStr = $csvData[$csvData.Length-1]."time_rev"
+        $mean = [decimal]$meanStr * 1000
     }
     else
     {
