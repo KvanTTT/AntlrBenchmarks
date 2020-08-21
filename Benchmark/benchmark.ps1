@@ -47,14 +47,14 @@ $runtimes = @{
 };
 
 $testConfigs = @(
-    New-Object PSObject -Property @{ Runtime = "JavaStandard"; Grammar = "LeftRecursion" };
+    New-Object PSObject -Property @{ Runtime = "JavaStandard"; Grammar = "NotLeftRecursion" };
     New-Object PSObject -Property @{ Runtime = "JavaOptimized"; };
     New-Object PSObject -Property @{ Runtime = "CSharpStandard"; };
     New-Object PSObject -Property @{ Runtime = "CSharpOptimized"; };
     New-Object PSObject -Property @{ Runtime = "Python3Standard"; };
     New-Object PSObject -Property @{ Runtime = "JavaScriptStandard"; };
     New-Object PSObject -Property @{ Runtime = "GoStandard"; };
-    New-Object PSObject -Property @{ Runtime = "JavaStandard"; Grammar = "NotLeftRecursion" };
+    New-Object PSObject -Property @{ Runtime = "JavaStandard"; Grammar = "LeftRecursion" };
     New-Object PSObject -Property @{ Runtime = "JavaOptimized"; };
     New-Object PSObject -Property @{ Runtime = "CSharpStandard"; };
     New-Object PSObject -Property @{ Runtime = "CSharpOptimized"; };
