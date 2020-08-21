@@ -27,8 +27,9 @@ let chars = new antlr4.InputStream(data);
 let lexer = new __TemplateGrammarName__Lexer(chars);
 let tokenStream = new antlr4.CommonTokenStream(lexer);
 
-Benchmark(true, warmUpCount)
-let time = Benchmark(false, iterationCount)
+__TemplateGrammarName_____RuntimeName__();
+Benchmark(true, warmUpCount);
+let time = Benchmark(false, iterationCount);
 
 fs.writeFileSync("__TemplateGrammarName_____RuntimeName__.benchmark", time);
 

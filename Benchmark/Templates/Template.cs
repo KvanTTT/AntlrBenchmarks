@@ -56,6 +56,7 @@ public class __TemplateGrammarName__Tests
         var lexer = new __TemplateGrammarName__Lexer(stream);
         lexer.AddErrorListener(new LexerErrorListener());
         tokenStream = new CommonTokenStream(lexer);
+        __TemplateGrammarName_____RuntimeName__();
     }
 
     [Benchmark]

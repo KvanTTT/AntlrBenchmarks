@@ -35,6 +35,7 @@ def main(argv):
     lexer = __TemplateGrammarName__Lexer(code_stream)
     token_stream = CommonTokenStream(lexer)
 
+    __TemplateGrammarName_____RuntimeName__()
     benchmark(True, warm_up_count)
     time = benchmark(False, iteration_count)
 

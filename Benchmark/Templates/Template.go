@@ -27,6 +27,8 @@ func main() {
 
 	predictionMode = "SLL"
 
+	__TemplateGrammarName_____RuntimeName__()
+
 	benchmark(true, WarmUpCount)
 	time := benchmark(false, IterationCount)
 

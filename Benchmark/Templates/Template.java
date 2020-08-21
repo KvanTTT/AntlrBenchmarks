@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
 @Fork(value = 1)
-@Warmup(iterations = 2)
+@Warmup(iterations = 1)
 @Measurement(iterations = 3)
 public class __TemplateGrammarName__ {
     public static String InputFileName;
@@ -50,11 +50,12 @@ public class __TemplateGrammarName__ {
         CharStream codeStream = CharStreams.fromFileName(InputFileName != null ? InputFileName : "default_input_file");
         __TemplateGrammarName__Lexer lexer = new __TemplateGrammarName__Lexer(codeStream);
         tokenStream = new CommonTokenStream(lexer);
+        __TemplateGrammarName_____RuntimeName__();
     }
 
     @Benchmark
     public Object __TemplateGrammarName_____RuntimeName__() {
-        tokenStream.reset();
+        tokenStream.seek(0);
         __TemplateGrammarName__Parser parser = new __TemplateGrammarName__Parser(tokenStream);
         parser.setBuildParseTree(BuildParseTree);
         parser.getInterpreter().setPredictionMode(Mode.equals("sll") ? PredictionMode.SLL : PredictionMode.LL);
