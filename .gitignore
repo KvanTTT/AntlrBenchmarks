@@ -357,3 +357,5 @@ MigrationBackup/
 
 # Java and Maven
 target/
+
+Result-*
