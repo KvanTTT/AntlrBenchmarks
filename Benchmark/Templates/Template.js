@@ -46,7 +46,7 @@ function Benchmark(warmUp, iterationCount) {
 }
 
 function __TemplateGrammarName_____RuntimeName__() {
-    tokenStream.reset();
+    tokenStream.seek(0);
     let parser = new __TemplateGrammarName__Parser(tokenStream);
     parser.buildParseTrees = buildParseTrees;
     parser._interp.predictionMode = mode === "sll" ? PredictionMode.SLL : PredictionMode.LL;

@@ -53,7 +53,7 @@ def benchmark(warmUp, iteration_count):
 
 
 def __TemplateGrammarName_____RuntimeName__():
-    token_stream.reset()
+    token_stream.seek(0)
     parser = __TemplateGrammarName__Parser(token_stream)
     parser.buildParseTrees = False
     parser._interp.predictionMode = PredictionMode.SLL if mode == "sll" else PredictionMode.LL

@@ -62,7 +62,7 @@ public class __TemplateGrammarName__Tests
     [Benchmark]
     public object __TemplateGrammarName_____RuntimeName__()
     {
-        tokenStream.Reset();
+        tokenStream.Seek(0);
         var parser = new __TemplateGrammarName__Parser(tokenStream);
         parser.BuildParseTree = BuildParseTree;
         parser.Interpreter.PredictionMode = Mode == "sll" ?
